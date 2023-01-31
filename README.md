@@ -3,6 +3,21 @@
 
 - [CSS学习笔记](#css学习笔记)
   - [CS语法规则](#cs语法规则)
+    - [普通规则](#普通规则)
+    - [@规则](#规则)
+      - [常规规则](#常规规则)
+        - [@charset](#charset)
+      - [@import](#import)
+      - [@namespace](#namespace)
+    - [嵌套规则](#嵌套规则)
+  - [@media媒体查询](#media媒体查询)
+    - [媒体类型](#媒体类型)
+    - [媒体特性](#媒体特性)
+    - [逻辑操作符](#逻辑操作符)
+    - [定义媒体查询](#定义媒体查询)
+      - [@media方法](#media方法)
+      - [@import方法](#import方法)
+      - [html外部引入](#html外部引入)
   - [CSS选择器](#css选择器)
     - [基本选择器](#基本选择器)
       - [通用选择器](#通用选择器)
@@ -17,6 +32,12 @@
       - [分组选择器](#分组选择器)
       - [属性选择器](#属性选择器)
     - [伪类选择器](#伪类选择器)
+    - [伪元素](#伪元素)
+      - [伪元素 ::after](#伪元素-after)
+      - [伪元素::first-letter](#伪元素first-letter)
+      - [伪元素 ::first-line](#伪元素-first-line)
+      - [伪元素 ::selection](#伪元素-selection)
+      - [伪元素 ::placeholder](#伪元素-placeholder)
   - [HTML引用CSS方法](#html引用css方法)
     - [内嵌样式](#内嵌样式)
     - [内联样式](#内联样式)
@@ -79,18 +100,46 @@
     - [盒子阴影（box-shadow）](#盒子阴影box-shadow)
     - [圆角（border-radius）](#圆角border-radius)
     - [box-sizing：设置盒子模型大小](#box-sizing设置盒子模型大小)
+    - [resize调整元素大小](#resize调整元素大小)
   - [CSS属性：布局](#css属性布局)
     - [可见性(visibility)](#可见性visibility)
     - [显示类型(display)](#显示类型display)
-    - [浮动(float)](#浮动float)
     - [定位(position)](#定位position)
       - [static](#static)
       - [relative](#relative)
       - [absolute 绝对定位](#absolute-绝对定位)
       - [fixed 固定定位](#fixed-固定定位)
+      - [粘性定位：sticky](#粘性定位sticky)
+    - [浮动(float)布局](#浮动float布局)
+    - [多列布局column](#多列布局column)
+    - [弹性布局(弹性盒子)flex](#弹性布局弹性盒子flex)
+      - [容器属性](#容器属性)
+        - [flex-direction](#flex-direction)
+        - [flex-wrap](#flex-wrap)
+        - [flex-flow](#flex-flow)
+        - [justify-content](#justify-content)
+        - [align-items](#align-items)
+        - [align-content](#align-content)
+      - [元素属性](#元素属性)
+        - [order](#order)
+        - [align-self](#align-self)
+        - [flex](#flex)
+  - [网页布局](#网页布局)
+    - [头部区域](#头部区域)
+    - [菜单导航区域](#菜单导航区域)
+    - [内容区域](#内容区域)
+    - [底部区域](#底部区域)
 
 <!-- /TOC -->
 ## CS语法规则
+
+### 普通规则
+
+有三部分构成：
+
+- 选择器
+- 属性
+- 值
 
 ```css
 选择器{
@@ -98,11 +147,130 @@
 }
 ```
 
-有三部分构成：
+### @规则
 
-- 选择器
-- 属性
-- 值
+以@开头后面跟随一个关键字的形式构成，根据使用方法的不同又可以分为“常规规则”与“嵌套规则”两种。
+
+#### 常规规则
+
+语句结构为
+
+```css
+@keyword rule
+```
+
+##### @charset
+
+ 用来设置 CSS 文件使用的字符编码，语法格式如下：
+
+ ```css
+@charset "编码方式名称"; /*默认值为“utf-8”。*/
+```
+
+在使用时需要注意以下几点：
+
+- 如果设置 @charset 的话，那么它必须出现在 CSS 文件的最前面，@charset 之前不能出现任何字符；
+- 字符编码需要使用双引号""包裹起来；
+- @规则名称（@charset）与具体的字符编码之间需要使用一个空格分隔；
+- 规则后面的分号不能省略；
+如果设置多个 @charset，那么只有第一个声明有效；
+- 不能在 HTML 元素或者 `<style>` 标签中使用 @charset；
+- 如果以不同的方式定义了多种字符编码规则，它们的优先级顺序如下：
+HTML 文件开头的字符编码声明；
+HTTP 请求头中的字符编码声明；
+CSS 文件中使用 @charset 定义的字符编码声明；
+- `<link>` 标签中 charset 属性设置的字符编码声明（HTML5 中已废弃）。
+
+#### @import
+
+用来向当前 CSS 样式文件中导入其它样式文件。通过 @import 可以引入其他样式表文件中除 @charset 以外的所有内容，另外 @import 也必须放在样式文件的最前面。
+
+语法格式如下：
+
+```css
+@import url("css文件路径");
+```
+
+#### @namespace
+
+@namespace 用来定义 CSS 样式表中 XML 命名空间的 @规则
+
+### 嵌套规则
+
+在 @规则后面需要跟随一个花括号{ }，其中包含了一些其它的规则声明，语句格式如下：
+
+```css
+@keyword {
+  /*样式规则*/
+}
+```
+
+## @media媒体查询
+
+媒体查询是根据不同的媒体类型（设备类型）和条件来区分各种设备（例如：电脑、手机、平板电脑、盲文设备等），并为它们分别定义不同的 CSS 样式。媒体查询能让 CSS 可以更精确的作用于不同的设备或同一设备的不同条件，让所有用户都能得到很好的用户体验。
+
+### 媒体类型
+
+媒体类型用来表示设备的类别，CSS 中提供了一些关键字来表示不同的媒体类型，如下表所示：
+
+媒体类型| 描述
+---|---
+all |表示所有的媒体设备
+handheld |表示小型手持设备，如手机、平板电脑
+projection| 表示投影设备
+screen |表示电脑显示器
+tv |表示电视机类型的设备
+
+### 媒体特性
+
+除了具体的类型外，还可以通过一些属性来描述设备的具体特征，例如宽度、高度、分辨率等，如下表所示：
+
+![媒体特性](%E5%AA%92%E4%BD%93%E7%89%B9%E6%80%A7.png)
+
+### 逻辑操作符
+
+逻辑操作符包含 not、and 和 only 三个，通过逻辑操作符可以构建复杂的媒体查询，还可以通过逗号来分隔多个媒体查询，将它们组合为一个规则。
+
+- and：用于将多个媒体查询组合成一条媒体查询，当每个查询规则都为真时则该条媒体查询为真，另外通过 and 操作符还可以将媒体特性与媒体类型结合在一起；
+- not：用于否定媒体查询，当查询规则不为真时则返回 true，否则返回 false。如果使用 not 操作符，则还必须指定媒体类型；
+- only：仅在整个查询匹配时才会生效，当不使用 only 时，旧版的浏览器会将 screen and (max-width: 500px) 简单地解释为 screen，忽略查询的其余部分，并将样式应用于所有屏幕。 如果使用 only 运算符，则还必须指定媒体类型。
+
+### 定义媒体查询
+
+通过以下两种方式来定义媒体查询：
+
+- 使用 @media 或 @import 规则在样式表中指定对应的设备类型；
+- 用 media 属性在 `<style>、<link>、<source>`或其他 HTML 元素中指定特定的设备类型。
+
+#### @media方法
+
+@media 可以指定一组媒体查询和一个 CSS 样式块，当且仅当媒体查询与正在使用的设备匹配时，指定的 CSS 样式才会应用于文档
+
+```css
+/* 在小于或等于 992 像素的屏幕上，将背景色设置为蓝色 */
+@media screen and (max-width: 992px) {
+  body {
+    background-color: blue;
+  }
+}
+```
+
+#### @import方法
+
+用来导入指定的外部样式文件并指定目标的媒体类型
+
+```css
+@import url("css/screen.css") screen;   /* 引入外部样式，该样式仅会应用于电脑显示器 */
+@import url("css/print.css") print;     /* 引入外部样式，该样式仅会应用于打印设备 */
+```
+
+#### html外部引入
+
+在html文件里外部引入css文件时，可以针对不同的媒体使用不同的样式表：
+
+```html
+<link rel="stylesheet" media="mediatype and|not|only (expressions)" href="print.css">
+```
 
 ## CSS选择器
 
@@ -133,7 +301,7 @@
 
 #### ID选择器
 
-用来匹配 HTML 文档中具有<font color='red'>指定 ID 属性的标签</font>，ID 选择器的定义需要用到井号`#`，后面紧跟 ID 属性的值
+用来匹配 HTML 文档中具有<font color='red'>指定 ID 属性的标签</font>，ID 选择器的定义需要用到`#`号，后面紧跟 ID 属性的值
 
 ```css
 #id值{
@@ -267,7 +435,69 @@ selector:pseudo-class {
 }
 ```
 
-![伪类](%E4%BC%AA%E7%B1%BB.png)
+`selector`为选择器名称，`pseudo`为伪类的名称
+![css伪类](css%E4%BC%AA%E7%B1%BB.jpeg "CSS伪类")
+
+### 伪元素
+
+伪元素是一个附加在选择器末尾的关键词，通过伪元素不需要借助元素的 ID 或 class 属性就可以对被选择元素的特定部分定义样式。例如通过伪元素可以设置段落中第一个字母的样式，或者在元素之前、之后插入一些内容等等。
+
+在 CSS3 中，将伪元素单冒号的使用方法改为了使用双冒号`::`，以此来区分伪类和伪元素。
+
+```css
+selector::pseudo-element {
+    property: value;
+}
+```
+
+>注意：一个选择器中只能使用一个伪元素，而且伪元素必须紧跟在选择器之后。按照最新的 W3C 规范，在定义伪元素时您应该使用双冒号::而不是单个冒号:，以便区分伪类和伪元素。但由于旧版本的 W3C 规范并未对此进行特别区分，因此目前绝大多数的浏览器都同时支持使用单冒号和双冒号两种方式来定义伪元素。
+
+CSS 中提供了一系列的伪元素，如下表所示：
+
+伪元素| 例子| 例子描述
+---|---|---
+::after| p::after| 在每个 `<p>` 元素之后插入内容
+::before| p::before| 在每个` <p> `元素之前插入内容
+::first-letter| p::first-letter| 匹配每个 `<p>`元素中内容的首字母
+::first-line| p::first-line| 匹配每个 `<p>` 元素中内容的首行
+::selection| p::selection| 匹配用户选择的元素部分
+::placeholder| input::placeholder| 匹配每个表单输入框（例如`<input>`）的 placeholder 属性
+
+#### 伪元素 ::after
+
+能够在指定元素的后面插入一些内容，在 ::after 中需要使用 content 属性来定义要追加的内容，而且在 ::after 中必须定义 content 属性才会生效（没有需要插入的内容时可以将 content 属性的值定义为空""）。
+
+```css
+p.two::after {
+            content:"要插入的内容";
+            color: red;
+            font-size: 6px;}
+```
+
+#### 伪元素::first-letter
+
+用来设置指定元素中内容第一个字符的样式，通常用来配合 font-size 和 float 属性制作首字下沉效果。需要注意的是，伪元素 ::first-letter 仅可以用于块级元素，行内元素想要使用该伪元素，则需要先将其转换为块级元素。
+
+#### 伪元素 ::first-line
+
+用来设置指定元素中内容第一行的样式，与 ::first-letter 类似，伪元素 ::first-line 也仅可以用于块级元素，行内元素想要使用该伪元素，则需要先将其转换为块级元素。
+
+#### 伪元素 ::selection
+
+用来设置对象被选中时的样式，需要注意的是，伪元素 ::selection 中只能定义元素被选中时的 color、background、cursor、outline 以及 text-shadow（IE11 尚不支持定义该属性）等属性。
+
+#### 伪元素 ::placeholder
+
+用来设置表单元素（`<input>、<textarea>`元素）的占位文本（通过 HTML 的 placeholder 属性设置的文本）
+
+```css
+input.text::placeholder{
+            color: red;
+            background-color: #CCC;
+        }
+```
+
+![占位文本](占位文本.png)
 
 ## HTML引用CSS方法
 
@@ -1019,6 +1249,28 @@ content-box| 默认值，元素的实际宽度或高度等于元素内容区的�
 border-box| 在元素的内容区内绘制内边距或边框，内边距或边框不会影响元素的实际宽度或高度
 inherit |从父元素继承 box-sizing 属性的值。
 
+### resize调整元素大小
+
+ resize 属性允许用户通过拖动的方式来自由缩放元素的尺寸
+
+ resize 属性的语法格式如下：
+
+```css
+resize: none|both|horizontal|vertical;
+```
+
+语法说明如下：
+
+- none：用户无法调整元素的尺寸；
+- both：用户可调整元素的高度和宽度；
+- horizontal：用户可调整元素的宽度；
+- vertical：用户可调整元素的高度。
+
+在使用 resize 属性时还需要注意以下几点：
+
+- 单独设置 resize 属性是无效的，resize 属性需要与 overflow 属性结合使用才有效，并且 overflow 属性的值需要设置为 auto、hidden 或 scroll；
+- 并不是所有的元素都可以设置 resize 属性，比如 img 和 table 属性就没办法使用 resize 属性。
+
 ## CSS属性：布局
 
 ### 可见性(visibility)
@@ -1065,19 +1317,6 @@ inherit |从父元素继承 display 属性的值
 
 >伸缩盒子（弹性盒子）是 CSS3 中一种新的布局模式，引入伸缩盒子的目的是提供一种更加有效的方式来对页面中的元素进行排列、对齐和分配空间，当页面需要适应不同的屏幕大小以及设备类型时这种布局方式能够确保元素拥有恰当尺寸和位置。
 
-### 浮动(float)
-
-浮动可以使一个元素脱离自己原本的位置，并在父元素的内容区中向左或向右移动，直到碰到父元素内容区的边界或者其它浮动元素为止。
-
-`float` 属性有三个可选值，如下表所示：
-
-值| 描述
----|---
-left| 元素向左浮动
-right| 元素向右浮动
-none |默认值，元素不浮动
-inherit| 从父元素继承 float 属性的值
-
 ### 定位(position)
 
 设置元素在页面中的位置，`position` 属性有 5 个可选值，分别对应 5 种不同的定位方式
@@ -1093,7 +1332,6 @@ inherit| 从父元素继承 float 属性的值
 可以通过 top、bottom、left 和 right 四个属性的组合来设置元素相对于默认位置在不同方向上的偏移量。
 
 ![位置属性演示](%E4%BD%8D%E7%BD%AE%E5%B1%9E%E6%80%A7%E6%BC%94%E7%A4%BA.gif)
-
 
 ```css
 div.static {
@@ -1116,3 +1354,210 @@ div.static {
 #### fixed 固定定位
 
 固定定位就是将元素相对于浏览器窗口进行定位，使用固定定位的元素不会因为浏览器窗口的滚动而移动，就像是固定在了页面上一样
+
+#### 粘性定位：sticky
+
+粘性定位与前面介绍的四种定位方式不太一下，它像是相对定位和固定定位的结合体，<font color=red>当滚动页面时它的效果与相对定位相同，当元素滚动到一定程度时它又会呈现出固定定位的效果</font>。
+
+>比如一些网页上的导航菜单，当页面加载完成时它在自己默认的位置，当我们向下滚动页面时它又会固定在页面的最顶端。
+
+使用粘性定位时，需要注意以下几点：
+
+- 在设置position:sticky;时，必须再定义 top、bottom、right、left 四个属性之一，否则只会处于相对定位的状态；
+- 使用粘性定位元素的父元素不能定义overflow:hidden或者overflow:auto属性；
+- 父元素的高度不能低于粘性定位元素的高度；
+- 粘性定位的元素仅在其父元素内有效。
+
+### 浮动(float)布局
+
+浮动可以使一个元素脱离自己原本的位置，并在父元素的内容区中向左或向右移动，直到碰到父元素内容区的边界或者其它浮动元素为止。
+
+`float` 属性有三个可选值，如下表所示：
+
+值| 描述
+---|---
+left| 元素向左浮动
+right| 元素向右浮动
+none |默认值，元素不浮动
+inherit| 从父元素继承 float 属性的值
+
+### 多列布局column
+
+当需要在页面中展示大量文本时，如果每段的文本都很长，阅读起来就会非常麻烦，有可能读错行或读串行。
+
+为了提高阅读的舒适性，CSS3 中引入了多列布局模块，用于以简单有效的方式创建多列布局。所谓多列布局指的就是可以将文本内容分成多块，然后让这些块并列显示，类似于报纸、杂志那样的排版形式，如下图所示：
+
+![多列布局](多列布局.gif)
+
+多列布局属性：
+属性| 说明
+---|---
+column-count| 指定元素应该分为几列
+column-fill| 指定如何填充每个列
+column-gap |指定列与列之间的间隙
+column-rule |所有 column-rule-* 属性的简写形式
+column-rule-color| 指定列与列之间边框的颜色
+column-rule-style |指定列与列之间边框的样式
+column-rule-width |指定列与列之间边框的宽度
+column-span |指定元素应该横跨多少列
+column-width |指定列的宽度
+columns |column-width 与 column-count 属性的简写属性
+
+### 弹性布局(弹性盒子)flex
+
+采用 Flex 布局的元素，称为 Flex 容器（flex container），简称“容器”。它的所有子元素自动成为容器成员，称为 Flex 项目（flex item），简称“项目”。
+
+容器默认存在两根轴，分别为水平的主轴（main axis）和垂直的交叉轴（cross axis）。主轴的开始位置叫做 main start，结束位置叫做 main end；交叉轴的开始位置叫做 cross start，结束位置叫做 cross end。项目默认沿主轴排列。
+
+单个项目占据的主轴空间叫做 main size，占据的交叉轴空间叫做 cross size。
+
+如下图所示：
+![flex容器](flex容器.gif)
+
+> 可以通过将元素的 display 属性设置为 flex（生成块级 flex 容器）或 inline-flex（生成类似 inline-block 的行内块级 flex 容器）。当一个元素设置了 Flex 布局以后，其子元素的 float、clear 和 vertical-align 等属性将失效。
+
+CSS 中提供了以下属性来实现 Flex 布局：
+
+![flex属性](flex属性.png)
+
+按照作用范围的不同，这些属性可以分为两类：
+
+- 容器属性（flex-direction、flex-wrap、flex-flow、justify-content、align-items、align-content）
+- 项目属性（order、align-self、flex、flex-grow、flex-shrink、flex-basis）。
+
+#### 容器属性
+
+##### flex-direction
+
+决定主轴的方向即flex容器内元素的排列方向，属性的可选值如下：
+
+值 |描述
+---|---
+row |默认值，主轴沿水平方向从左到右
+row-reverse| 主轴沿水平方向从右到左
+column |主轴沿垂直方向从上到下
+column-reverse| 主轴沿垂直方向从下到上
+initial |将此属性设置为属性的默认值
+inherit |从父元素继承此属性的值
+
+##### flex-wrap
+
+用来设置当弹性盒的子元素（项目）超出父容器时是否换行，属性的可选值如下：
+
+值 |描述
+--- |---
+nowrap |默认值，表示项目不会换行
+wrap |表示项目会在需要时换行
+wrap-reverse| 表示项目会在需要时换行，但会以相反的顺序
+initial |将此属性设置为属性的默认值
+inherit |从父元素继承属性的值
+
+##### flex-flow
+
+flex-flow 属性是 flex-direction 和 flex-wrap 两个属性的简写，语法格式如下：
+
+```css
+flex-flow: flex-direction flex-wrap;
+```
+
+##### justify-content
+
+justify-content 属性用于设置弹性盒子中元素在水平方向上的对齐方式，属性的可选值如下：
+
+值| 描述
+---|---
+flex-start| 默认值，左对齐
+flex-end |右对齐
+center| 居中
+space-between |两端对齐，项目之间的间隔是相等的
+space-around| 每个项目两侧的间隔相等
+initial |将此属性设置为属性的默认值
+inherit| 从父元素继承属性的值
+
+##### align-items
+
+align-items 属性用来设置弹性盒子中元素在侧轴（纵轴）方向上的对齐方式，属性的可选值如下：
+
+值 |描述
+---|---
+stretch |默认值，项目将被拉伸以适合容器
+center |项目位于容器的中央
+flex-start| 项目位于容器的顶部
+flex-end |项目位于容器的底部
+baseline |项目与容器的基线对齐
+initial |将此属性设置为属性的默认值
+inherit| 从父元素继承属性的值
+
+![flex属性-垂直对齐方式](flex属性-垂直对齐方式.gif)
+
+##### align-content
+
+align-content 属性与 justify-content 属性类似，可以在弹性盒子的侧轴还有多余空间时调整容器内项目的对齐方式，属性的可选值如下：
+
+值 |描述
+---|---
+stretch| 默认值，将项目拉伸以占据剩余空间
+center |项目在容器内居中排布
+flex-start| 项目在容器的顶部排列
+flex-end| 项目在容器的底部排列
+space-between |多行项目均匀分布在容器中，其中第一行分布在容器的顶部，最后一行分布在容器的底部
+space-around| 多行项目均匀分布在容器中，并且每行的间距（包括离容器边缘的间距）都相等
+initial |将此属性设置为属性的默认值
+inherit| 从父元素继承该属性的值
+
+![align-content属性](align-content属性.png)
+
+#### 元素属性
+
+##### order
+
+order 属性用来设置元素在容器中出现的顺序，可以通过具体的数值来定义项目在容器中的位置，属性的语法格式如下：
+
+```css
+order: number;
+```
+
+##### align-self
+
+ 单独为某个元素设置不同于其它元素的对齐方式，该属性可以覆盖 align-items 属性的值。align-self 属性的可选值与align-items相同。
+
+##### flex
+
+flex 属性是 flex-grow、flex-shrink 和 flex-basis 三个属性的简写，语法格式如下：
+
+```css
+flex: flex-grow flex-shrink flex-basis;
+```
+
+参数说明如下：
+
+- flex-grow：（必填参数）一个数字，用来设置项目相对于其他项目的增长量，默认值为 0；
+- flex-shrink：（选填参数）一个数字，用来设置项目相对于其他项目的收缩量，默认值为 1；
+- flex-basis：（选填参数）项目的长度，合法值为 auto（默认值，表示自动）、inherit（表示从父元素继承该属性的值） 或者以具体的值加 "%"、"px"、"em" 等单位的形式。
+
+## 网页布局
+
+网页布局有很多种方式，一般分为以下几个部分：头部区域、菜单导航区域、内容区域、底部区域。
+
+![网页布局](网页布局.jpeg)
+
+### 头部区域
+
+头部区域位于整个网页的顶部，一般用于设置网页的标题或者网页的 logo
+
+### 菜单导航区域
+
+菜单导航条包含了一些链接，可以引导用户浏览其他页面：
+
+### 内容区域
+
+内容区域一般有三种形式:
+
+- 1 列：一般用于移动端
+- 2 列：一般用于平板设备
+- 3 列：一般用于 PC 桌面设备
+
+### 底部区域
+
+底部区域在网页的最下方，一般包含版权信息和联系方式等。
+
